@@ -10,11 +10,12 @@ Built with AI-assisted development (Vite, React, strict TypeScript, Recharts, Vi
 
 The Übersicht page only:
 
-- Four KPI rings: Verfügbarkeit, Leistung, Qualität, OEE, each with a delta vs. the start of the shift
+- Four KPI rings: Verfügbarkeit, Leistung, Qualität, OEE, each with a delta vs. the shift target (Schichtziel)
 - OEE over the Frühschicht (06:00-14:00)
 - Stop reasons with duration and count
 - Live plant status for Blistermaschine, Kartonierer, and Serialisierung
 - A ticking simulation clock with Pause, 1x, 10x, 60x, and reset (1x = one simulated minute per real second)
+- Three gloss themes (Khaki, Dunkelgrau, Mitternacht) and an optional slow background motion, off when reduced motion is preferred
 
 Other tabs are placeholders marked "bald verfügbar".
 

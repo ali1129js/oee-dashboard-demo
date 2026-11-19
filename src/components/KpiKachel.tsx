@@ -15,8 +15,8 @@ export function KpiKachel({ label, hint, value, delta, color }: Props) {
   const offset = c * (1 - Math.min(1, Math.max(0, value)));
   const deltaText =
     delta === 0
-      ? "unverändert vs. Schichtstart"
-      : `${delta > 0 ? "+" : ""}${delta} Prozentpunkte vs. Schichtstart`;
+      ? "unverändert vs. Schichtziel"
+      : `${delta > 0 ? "+" : ""}${delta} Prozentpunkte vs. Schichtziel`;
 
   return (
     <article
@@ -51,7 +51,7 @@ export function KpiKachel({ label, hint, value, delta, color }: Props) {
         </p>
         {hint ? <p className="kpi-kachel__hint">{hint}</p> : null}
         <p className={`kpi-kachel__delta ${deltaKlass(delta)}`}>
-          <DeltaPfeil delta={delta} /> {formatDelta(delta)} vs. Schichtstart
+          <DeltaPfeil delta={delta} /> {formatDelta(delta)} vs. Schichtziel
         </p>
       </div>
     </article>

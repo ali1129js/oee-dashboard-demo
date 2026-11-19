@@ -138,12 +138,34 @@ describe("snapshotAt", () => {
     }
   });
 
-  it("keeps deltas at 0 until the baseline time", () => {
-    const early = snapshotAt(plan, SHIFT_START_MIN + 10);
-    expect(early.deltas.oee).toBe(0);
+  it("keeps deltas at 0 at shift start, when there are no KPIs yet", () => {
+    const start = snapshotAt(plan, SHIFT_START_MIN);
+    expect(start.deltas).toEqual({
+      verfuegbarkeit: 0,
+      leistung: 0,
+      qualitaet: 0,
+      oee: 0,
+    });
     const later = snapshotAt(plan, DEMO_NOW_MIN);
     for (const v of Object.values(later.deltas)) {
       expect(Number.isInteger(v)).toBe(true);
+      expect(Math.abs(v)).toBeLessThanOrEqual(25);
+    }
+  });
+
+  it("puts line Leistung in a realistic 85-92% band instead of a flat 100%", () => {
+    const snap = snapshotAt(plan, DEMO_NOW_MIN);
+    expect(snap.kpis.leistung).toBeGreaterThanOrEqual(0.85);
+    expect(snap.kpis.leistung).toBeLessThanOrEqual(0.92);
+    expect(snap.kpis.leistung).toBeLessThan(1);
+  });
+
+  it("gives Anlagenstatus sparklines visible variation over the shift", () => {
+    const snap = snapshotAt(plan, DEMO_NOW_MIN);
+    for (const s of snap.stations) {
+      expect(s.sparkline.length).toBeGreaterThanOrEqual(8);
+      const span = Math.max(...s.sparkline) - Math.min(...s.sparkline);
+      expect(span).toBeGreaterThanOrEqual(0.15);
     }
   });
 

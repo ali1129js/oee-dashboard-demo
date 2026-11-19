@@ -7,6 +7,7 @@ import {
   SHIFT_END_MIN,
   SHIFT_START_MIN,
   STATION_IDS,
+  SCHICHT_ZIEL,
   STATION_NAMEN,
   WARNUNG_OEE,
   type Anlagenstatus,
@@ -93,7 +94,7 @@ const STATION_BASIS: Record<
   { ideal: number; yield0: number; speed0: number }
 > = {
   blistermaschine: { ideal: 12, yield0: 0.99, speed0: 0.97 },
-  kartonierer: { ideal: 10.5, yield0: 0.985, speed0: 0.8 },
+  kartonierer: { ideal: 10.5, yield0: 0.985, speed0: 0.88 },
   serialisierung: { ideal: 11.5, yield0: 0.988, speed0: 0.95 },
 };
 
@@ -116,7 +117,10 @@ export function buildShiftPlan(seed: number = DEMO_SEED): ShiftPlan {
       name: STATION_NAMEN[id],
       idealUnitsPerMin: basis.ideal,
       qualityYield: clampRange(basis.yield0 + randRange(rng, -0.008, 0.008), 0.95, 0.999),
-      speedFactor: clampRange(basis.speed0 + randRange(rng, -0.03, 0.03), 0.7, 1),
+      speedFactor:
+        id === "kartonierer"
+          ? clampRange(basis.speed0 + randRange(rng, -0.02, 0.02), 0.85, 0.92)
+          : clampRange(basis.speed0 + randRange(rng, -0.03, 0.03), 0.7, 1),
       stops,
     };
   });
@@ -162,15 +166,18 @@ export function snapshotAt(plan: ShiftPlan, nowInput: number): ShiftSnapshot {
     goodUnits: line.goodUnits,
     kpis: line.kpis,
     startKpis,
-    deltas: {
-      verfuegbarkeit: deltaProzentpunkte(
-        line.kpis.verfuegbarkeit,
-        startKpis.verfuegbarkeit
-      ),
-      leistung: deltaProzentpunkte(line.kpis.leistung, startKpis.leistung),
-      qualitaet: deltaProzentpunkte(line.kpis.qualitaet, startKpis.qualitaet),
-      oee: deltaProzentpunkte(line.kpis.oee, startKpis.oee),
-    },
+    deltas:
+      line.plannedMin <= 0
+        ? { verfuegbarkeit: 0, leistung: 0, qualitaet: 0, oee: 0 }
+        : {
+            verfuegbarkeit: deltaProzentpunkte(
+              line.kpis.verfuegbarkeit,
+              SCHICHT_ZIEL.verfuegbarkeit
+            ),
+            leistung: deltaProzentpunkte(line.kpis.leistung, SCHICHT_ZIEL.leistung),
+            qualitaet: deltaProzentpunkte(line.kpis.qualitaet, SCHICHT_ZIEL.qualitaet),
+            oee: deltaProzentpunkte(line.kpis.oee, SCHICHT_ZIEL.oee),
+          },
     oeeUeberSchicht,
     stillstaende,
     stations,
@@ -191,18 +198,19 @@ function streckenKennzahlen(
   const plannedMin = Math.max(0, atMin - plan.startMin);
   const down = unionDauer(lineStops, plan.startMin, atMin);
   const runMin = Math.max(0, plannedMin - down);
-  const bottleneck = Math.min(
+  const idealBottleneck = Math.min(...plan.stations.map((s) => s.idealUnitsPerMin));
+  const rateBottleneck = Math.min(
     ...plan.stations.map((s) => s.idealUnitsPerMin * s.speedFactor)
   );
   const yieldMin = Math.min(...plan.stations.map((s) => s.qualityYield));
-  const totalUnits = Math.floor(runMin * bottleneck);
+  const totalUnits = Math.floor(runMin * rateBottleneck);
   const goodUnits = Math.floor(totalUnits * yieldMin);
   const kpis = berechneKennzahlen({
     plannedMin,
     runMin,
     totalUnits,
     goodUnits,
-    idealUnitsPerMin: bottleneck,
+    idealUnitsPerMin: idealBottleneck,
   });
   return { plannedMin, runMin, totalUnits, goodUnits, kpis };
 }
@@ -233,22 +241,23 @@ function stationSnapshot(
 
   const sparkline: number[] = [];
   const step = 15;
-  const sparkStart = Math.max(startMin, nowMin - step * 7);
-  for (let t = sparkStart; t <= nowMin + 1e-9; t += step) {
-    const p = Math.max(0, t - startMin);
-    const d = unionDauer(station.stops, startMin, t);
-    const r = Math.max(0, p - d);
+  for (let from = startMin; from < nowMin - 1e-9;) {
+    const to = Math.min(from + step, nowMin);
+    const planned = Math.max(0, to - from);
+    const d = unionDauer(station.stops, from, to);
+    const r = Math.max(0, planned - d);
     const tot = Math.floor(r * station.idealUnitsPerMin * station.speedFactor);
     const good = Math.floor(tot * station.qualityYield);
     sparkline.push(
       berechneKennzahlen({
-        plannedMin: p,
+        plannedMin: planned,
         runMin: r,
         totalUnits: tot,
         goodUnits: good,
         idealUnitsPerMin: station.idealUnitsPerMin,
       }).oee
     );
+    from = to;
   }
   if (sparkline.length === 0) sparkline.push(kpis.oee);
 

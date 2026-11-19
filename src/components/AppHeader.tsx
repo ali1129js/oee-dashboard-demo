@@ -1,15 +1,23 @@
+import { MotionToggle } from "@/components/MotionToggle";
 import { DEMO_DATUM, LINIE_NAME, LINIE_UNTERTITEL } from "@/lib/types";
-import type { ThemeName } from "@/theme/colors";
+import {
+  THEME_LABELS,
+  THEME_NAMES,
+  type MotionName,
+  type ThemeName,
+} from "@/theme/colors";
 
 type Props = {
   theme: ThemeName;
-  onToggleTheme: () => void;
+  onTheme: (theme: ThemeName) => void;
+  motion: MotionName;
+  onMotion: (motion: MotionName) => void;
+  reducedMotion: boolean;
 };
 
 const LATER_TABS = ["Linienübersicht", "Historie", "Einstellungen"] as const;
 
-export function AppHeader({ theme, onToggleTheme }: Props) {
-  const next = theme === "dark" ? "Hell" : "Dunkel";
+export function AppHeader({ theme, onTheme, motion, onMotion, reducedMotion }: Props) {
   return (
     <header className="topbar">
       <div className="topbar__inner">
@@ -61,14 +69,26 @@ export function AppHeader({ theme, onToggleTheme }: Props) {
           <p className="meta-chip">
             <time dateTime="2026-11-19">{DEMO_DATUM}</time>
           </p>
-          <button
-            type="button"
-            className="btn btn--theme"
-            onClick={onToggleTheme}
-            aria-label={`Farbschema ${theme === "dark" ? "Dunkel" : "Hell"}, umschalten auf ${next}`}
-          >
-            {next}
-          </button>
+          <div className="theme-tools">
+            <div role="group" aria-label="Farbschema" className="segmented wrap">
+              {THEME_NAMES.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  className="segment"
+                  aria-pressed={theme === name}
+                  onClick={() => onTheme(name)}
+                >
+                  {THEME_LABELS[name]}
+                </button>
+              ))}
+            </div>
+            <MotionToggle
+              value={motion}
+              onChange={onMotion}
+              reducedMotion={reducedMotion}
+            />
+          </div>
         </div>
       </div>
     </header>

@@ -11,18 +11,22 @@ const browser = await chromium.launch({
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
 });
 
-async function shot(name, { theme, width, height }) {
+async function shot(name, { theme, motion = "static", width, height, colorScheme }) {
   const context = await browser.newContext({
     viewport: { width, height },
-    colorScheme: theme,
-    reducedMotion: "reduce",
+    colorScheme,
+    reducedMotion: motion === "animated" ? "no-preference" : "reduce",
     locale: "de-DE",
   });
   const page = await context.newPage();
   page.on("pageerror", (e) => console.error("PAGE ERROR", e.message));
-  await page.addInitScript((t) => {
-    localStorage.setItem("oee-dashboard-demo.theme", t);
-  }, theme);
+  await page.addInitScript(
+    ([t, m]) => {
+      localStorage.setItem("oee-dashboard-demo.theme", t);
+      localStorage.setItem("oee-dashboard-demo.motion", m);
+    },
+    [theme, motion]
+  );
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForSelector(".kpi-kachel");
   await page.waitForTimeout(400);
@@ -37,18 +41,31 @@ async function shot(name, { theme, width, height }) {
 }
 
 const overflows = [];
-if (
-  await shot("uebersicht-hell-1280.png", { theme: "light", width: 1280, height: 900 })
-) {
-  overflows.push("uebersicht-hell-1280.png");
-}
-if (
-  await shot("uebersicht-dunkel-1280.png", { theme: "dark", width: 1280, height: 900 })
-) {
-  overflows.push("uebersicht-dunkel-1280.png");
-}
-if (await shot("uebersicht-hell-390.png", { theme: "light", width: 390, height: 844 })) {
-  overflows.push("uebersicht-hell-390.png");
+for (const [name, opts] of [
+  [
+    "uebersicht-khaki-1280.png",
+    { theme: "khaki", width: 1280, height: 900, colorScheme: "light" },
+  ],
+  [
+    "uebersicht-dunkelgrau-1280.png",
+    { theme: "darkgrey", width: 1280, height: 900, colorScheme: "dark" },
+  ],
+  [
+    "uebersicht-mitternacht-1280.png",
+    { theme: "midnight", width: 1280, height: 900, colorScheme: "dark" },
+  ],
+  [
+    "uebersicht-khaki-1280-animated.png",
+    {
+      theme: "khaki",
+      motion: "animated",
+      width: 1280,
+      height: 900,
+      colorScheme: "light",
+    },
+  ],
+]) {
+  if (await shot(name, opts)) overflows.push(name);
 }
 
 await browser.close();

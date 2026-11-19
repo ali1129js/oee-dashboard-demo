@@ -51,7 +51,7 @@ export function Anlagenstatus({ stations, nowMin, theme }: Props) {
                     <span className={`status-pill status-pill--${s.status}`}>
                       <span
                         className="status-dot"
-                        style={{ background: col }}
+                        style={{ background: "currentColor" }}
                         aria-hidden="true"
                       />
                       {STATUS_LABEL[s.status]}

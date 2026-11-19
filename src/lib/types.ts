@@ -42,6 +42,14 @@ export const SIM_BANNER = "Simulation - Beispieldaten: Alle Werte sind simuliert
 /** Below this OEE, a running station is shown as Warnung. */
 export const WARNUNG_OEE = 0.75;
 
+/** Shift targets used for KPI deltas, labelled "vs. Schichtziel". */
+export const SCHICHT_ZIEL = {
+  verfuegbarkeit: 0.9,
+  leistung: 0.9,
+  qualitaet: 0.99,
+  oee: 0.8,
+} as const;
+
 export type StopEvent = {
   stationId: StationId;
   reason: StopReason;
