@@ -26,4 +26,18 @@ describe("theme contrast", () => {
       expect(contrastMeets(bg, fg, 4.5), `${fg} on ${bg}`).toBe(true);
     }
   });
+
+  it("meets 3:1 for control borders on background and card surface", () => {
+    for (const theme of THEME_NAMES) {
+      const tokens = colors[theme];
+      expect(
+        contrastMeets(tokens.bg, tokens.controlBorder, 3),
+        `${theme} controlBorder on bg (${tokens.controlBorder} / ${tokens.bg})`
+      ).toBe(true);
+      expect(
+        contrastMeets(tokens.surface, tokens.controlBorder, 3),
+        `${theme} controlBorder on surface (${tokens.controlBorder} / ${tokens.surface})`
+      ).toBe(true);
+    }
+  });
 });
