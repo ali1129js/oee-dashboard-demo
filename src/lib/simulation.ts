@@ -138,7 +138,8 @@ export function snapshotAt(plan: ShiftPlan, nowInput: number): ShiftSnapshot {
 
   const sampleEvery = 15;
   const oeeUeberSchicht = [];
-  for (let t = plan.startMin; t <= nowMin + 1e-9; t += sampleEvery) {
+  // Start at the first completed interval, not 06:00 where OEE is still 0.
+  for (let t = plan.startMin + sampleEvery; t <= nowMin + 1e-9; t += sampleEvery) {
     const minute = Math.min(t, nowMin);
     const k = streckenKennzahlen(plan, lineStops, minute).kpis;
     oeeUeberSchicht.push({

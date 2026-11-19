@@ -15,7 +15,7 @@ The Übersicht page only:
 - Stop reasons with duration and count
 - Live plant status for Blistermaschine, Kartonierer, and Serialisierung
 - A ticking simulation clock with Pause, 1x, 10x, 60x, and reset (1x = one simulated minute per real second)
-- Three gloss themes (Khaki, Dunkelgrau, Mitternacht) and an optional slow background motion, off when reduced motion is preferred
+- Three gloss themes (Khaki, Graphite, Mitternacht) and an optional slow background motion, off when reduced motion is preferred
 
 Other tabs are placeholders marked "bald verfügbar".
 

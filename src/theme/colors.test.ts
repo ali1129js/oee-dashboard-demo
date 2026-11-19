@@ -2,7 +2,7 @@ import { GLOSS, THEME_NAMES, colors, contrastMeets, contrastPairs } from "./colo
 
 describe("theme contrast", () => {
   it("meets WCAG AA (4.5:1) for every text pair in all three themes", () => {
-    expect(THEME_NAMES).toEqual(["khaki", "darkgrey", "midnight"]);
+    expect(THEME_NAMES).toEqual(["khaki", "graphite", "midnight"]);
     for (const pair of contrastPairs) {
       const bg = colors[pair.theme][pair.bg];
       const fg = colors[pair.theme][pair.fg];

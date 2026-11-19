@@ -6,8 +6,8 @@ export function readStoredTheme(): ThemeName | null {
   try {
     const v = localStorage.getItem(THEME_KEY);
     if (v === "light") return "khaki";
-    if (v === "dark") return "darkgrey";
-    return v === "khaki" || v === "darkgrey" || v === "midnight" ? v : null;
+    if (v === "dark" || v === "darkgrey") return "graphite";
+    return v === "khaki" || v === "graphite" || v === "midnight" ? v : null;
   } catch {
     return null;
   }
@@ -17,7 +17,7 @@ export function systemTheme(): ThemeName {
   return typeof window !== "undefined" &&
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "darkgrey"
+    ? "graphite"
     : "khaki";
 }
 

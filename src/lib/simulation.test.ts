@@ -169,9 +169,11 @@ describe("snapshotAt", () => {
     }
   });
 
-  it("builds an OEE series from 06:00 up to the current time", () => {
+  it("builds an OEE series from the first real interval up to the current time", () => {
+    expect(snapshotAt(plan, SHIFT_START_MIN).oeeUeberSchicht).toEqual([]);
     const snap = snapshotAt(plan, DEMO_NOW_MIN);
-    expect(snap.oeeUeberSchicht[0]?.label).toBe("06:00");
+    expect(snap.oeeUeberSchicht[0]?.label).toBe("06:15");
+    expect(snap.oeeUeberSchicht[0]?.oee).toBeGreaterThan(0);
     expect(snap.oeeUeberSchicht.at(-1)?.minute).toBeCloseTo(DEMO_NOW_MIN, 5);
     expect(formatUhrzeit(DEMO_NOW_MIN)).toBe("13:45");
     expect(formatUhrzeit(DEMO_NOW_MIN, true)).toBe("13:45:00");

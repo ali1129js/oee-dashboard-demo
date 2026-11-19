@@ -4,12 +4,12 @@
  * Brand fills (Jade, Saffron, Garnet, Cobalt) are tested against their on-colours,
  * not as body text, because those fills are used on glossy badges and buttons.
  */
-export const THEME_NAMES = ["khaki", "darkgrey", "midnight"] as const;
+export const THEME_NAMES = ["khaki", "graphite", "midnight"] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
 export const THEME_LABELS: Readonly<Record<ThemeName, string>> = {
   khaki: "Khaki",
-  darkgrey: "Dunkelgrau",
+  graphite: "Graphite",
   midnight: "Mitternacht",
 };
 
@@ -58,12 +58,12 @@ export const colors = {
     statusStopOn: GLOSS.onGarnet,
     disabled: "#7A6F56",
   },
-  darkgrey: {
-    bg: "#2A2C30",
-    surface: "#3A3D43",
-    text: "#E6E6E6",
-    muted: "#C5C8CE",
-    border: "#8A8E96",
+  graphite: {
+    bg: "#1E2329",
+    surface: "#2A313A",
+    text: "#E8ECF1",
+    muted: "#A7B0BC",
+    border: "#3A4350",
     bannerBg: "#16303A",
     bannerText: "#9BE7EE",
     bannerBorder: "#00A8B5",
@@ -73,14 +73,14 @@ export const colors = {
     ringOee: "#8DAEFF",
     bar: GLOSS.cobalt,
     chartLine: GLOSS.cobalt,
-    chartGrid: "#4A4E56",
+    chartGrid: "#3A4350",
     statusRun: GLOSS.jade,
     statusRunOn: GLOSS.onJade,
     statusWarn: GLOSS.saffron,
     statusWarnOn: GLOSS.onSaffron,
     statusStop: GLOSS.garnet,
     statusStopOn: GLOSS.onGarnet,
-    disabled: "#A8ADB4",
+    disabled: "#A7B0BC",
   },
   midnight: {
     bg: "#1B1428",

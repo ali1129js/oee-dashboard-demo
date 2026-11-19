@@ -47,8 +47,8 @@ for (const [name, opts] of [
     { theme: "khaki", width: 1280, height: 900, colorScheme: "light" },
   ],
   [
-    "uebersicht-dunkelgrau-1280.png",
-    { theme: "darkgrey", width: 1280, height: 900, colorScheme: "dark" },
+    "uebersicht-graphite-1280.png",
+    { theme: "graphite", width: 1280, height: 900, colorScheme: "dark" },
   ],
   [
     "uebersicht-mitternacht-1280.png",
