@@ -30,3 +30,7 @@ npm run build      # leak guard, then typecheck and Vite build
 ```
 
 See [docs/LERNEN.md](docs/LERNEN.md) for a short walk-through of the ideas used in the code.
+
+## Deploying
+
+`.github/workflows/deploy.yml` runs lint, typecheck, tests and build on every push and pull request, and deploys `dist/` to GitHub Pages when `main` or `master` changes (Pages source: GitHub Actions).
