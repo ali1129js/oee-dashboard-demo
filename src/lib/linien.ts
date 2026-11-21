@@ -2,6 +2,7 @@ import { buildShiftPlan, snapshotAt } from "./simulation";
 import {
   DEMO_NOW_MIN,
   SCHICHT_ZIEL,
+  type Anlagenstatus,
   type ShiftPlan,
   type ShiftSnapshot,
   type StopEvent,
@@ -163,3 +164,11 @@ export function vergleicheLinien(
 
 /** Target OEE used for the plant view, same as the single-line view. */
 export const LINIEN_ZIEL_OEE = SCHICHT_ZIEL.oee;
+
+/** Worst station status on the line: Steht beats Warnung beats Läuft. */
+export function linienKurzstatus(line: LinienSnapshot): Anlagenstatus {
+  const stati = line.snapshot.stations.map((s) => s.status);
+  if (stati.includes("steht")) return "steht";
+  if (stati.includes("warnung")) return "warnung";
+  return "laeuft";
+}

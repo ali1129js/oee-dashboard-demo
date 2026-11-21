@@ -446,9 +446,116 @@ input {
   display: block;
 }
 
+/* Linienübersicht */
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.page-title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.page-lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.plant-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.plant-summary > div {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: var(--surface);
+}
+.plant-summary__label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.plant-summary__value {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.line-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.line-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.line-card__name {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.line-card__sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.line-card__status {
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+}
+.line-card__status.is-laeuft {
+  color: var(--success-text, var(--text));
+}
+.line-card__status.is-warnung,
+.line-card__status.is-steht {
+  color: var(--danger-text, var(--text));
+}
+.line-card__tag {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.line-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  margin: 14px 0 0;
+}
+.line-kpis div {
+  margin: 0;
+}
+.line-kpis dt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.line-kpis dd {
+  margin: 2px 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Phone: keep the layout usable, no overflow traps. */
 @media (max-width: 960px) {
   .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .plant-summary,
+  .line-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .lower-grid {
@@ -463,6 +570,10 @@ input {
     padding-right: 12px;
   }
   .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .plant-summary,
+  .line-grid {
     grid-template-columns: 1fr;
   }
   .kpi-kachel__ring {

@@ -1,5 +1,6 @@
 import { MotionToggle } from "@/components/MotionToggle";
 import { DEMO_DATUM, LINIE_NAME, LINIE_UNTERTITEL } from "@/lib/types";
+import { PAGE_IDS, PAGE_LABELS, type PageId } from "@/lib/navigation";
 import {
   THEME_LABELS,
   THEME_NAMES,
@@ -8,6 +9,7 @@ import {
 } from "@/theme/colors";
 
 type Props = {
+  page: PageId;
   theme: ThemeName;
   onTheme: (theme: ThemeName) => void;
   motion: MotionName;
@@ -15,9 +17,16 @@ type Props = {
   reducedMotion: boolean;
 };
 
-const LATER_TABS = ["Linienübersicht", "Historie", "Einstellungen"] as const;
+const LATER_TABS = ["Historie", "Einstellungen"] as const;
 
-export function AppHeader({ theme, onTheme, motion, onMotion, reducedMotion }: Props) {
+export function AppHeader({
+  page,
+  theme,
+  onTheme,
+  motion,
+  onMotion,
+  reducedMotion,
+}: Props) {
   return (
     <header className="topbar">
       <div className="topbar__inner">
@@ -46,9 +55,16 @@ export function AppHeader({ theme, onTheme, motion, onMotion, reducedMotion }: P
         </div>
 
         <nav className="nav" aria-label="Seiten">
-          <a className="nav__item" href="#uebersicht" aria-current="page">
-            Übersicht
-          </a>
+          {PAGE_IDS.map((id) => (
+            <a
+              key={id}
+              className="nav__item"
+              href={`#${id}`}
+              aria-current={page === id ? "page" : undefined}
+            >
+              {PAGE_LABELS[id]}
+            </a>
+          ))}
           {LATER_TABS.map((name) => (
             <span
               key={name}

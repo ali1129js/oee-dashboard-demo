@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { LINIEN, baueAlleLinienPlaene, baueLinienPlan, vergleicheLinien } from "./linien";
+import {
+  LINIEN,
+  baueAlleLinienPlaene,
+  baueLinienPlan,
+  linienKurzstatus,
+  vergleicheLinien,
+} from "./linien";
+import { STATUS_LABEL } from "./types";
 import { SHIFT_END_MIN, SHIFT_START_MIN } from "./types";
 
 const plaene = baueAlleLinienPlaene();
@@ -72,5 +79,19 @@ describe("vergleicheLinien", () => {
   it("reports zero output at shift start", () => {
     const start = vergleicheLinien(plaene, SHIFT_START_MIN);
     expect(start.totalUnits).toBe(0);
+  });
+});
+
+describe("linienKurzstatus", () => {
+  it("uses the worst station status on the line", () => {
+    const v = vergleicheLinien(plaene, 13 * 60 + 45);
+    for (const line of v.linien) {
+      const status = linienKurzstatus(line);
+      const stati = line.snapshot.stations.map((s) => s.status);
+      if (stati.includes("steht")) expect(status).toBe("steht");
+      else if (stati.includes("warnung")) expect(status).toBe("warnung");
+      else expect(status).toBe("laeuft");
+      expect(STATUS_LABEL[status]).toBeTruthy();
+    }
   });
 });
