@@ -11,21 +11,34 @@ export type Speed = 0 | 1 | 10 | 60;
  */
 export function useSimulationClock(
   initialMin: number,
-  initialSpeed: Speed = 0
+  initialSpeed: Speed = 0,
+  startMin: number = SHIFT_START_MIN,
+  endMin: number = SHIFT_END_MIN
 ): {
   nowMin: number;
   speed: Speed;
   setSpeed: (s: Speed) => void;
   reset: () => void;
+  setFenster: (startMin: number, endMin: number, nowMin: number) => void;
 } {
-  const [nowMin, setNowMin] = useState(() => clampZeit(initialMin));
+  const [nowMin, setNowMin] = useState(() => clampZeit(initialMin, startMin, endMin));
   const [speed, setSpeedState] = useState<Speed>(initialSpeed);
   const speedRef = useRef<Speed>(0);
   speedRef.current = speed;
+  const fensterRef = useRef({ startMin, endMin });
 
   const setSpeed = useCallback((s: Speed) => {
     setSpeedState(s);
   }, []);
+
+  const setFenster = useCallback((start: number, end: number, now: number) => {
+    fensterRef.current = { startMin: start, endMin: end };
+    setNowMin(clampZeit(now, start, end));
+  }, []);
+
+  useEffect(() => {
+    fensterRef.current = { startMin, endMin };
+  }, [startMin, endMin]);
 
   useEffect(() => {
     if (speed === 0) return;
@@ -36,11 +49,12 @@ export function useSimulationClock(
       last = t;
       const factor = speedRef.current;
       if (factor === 0) return;
+      const ende = fensterRef.current.endMin;
       setNowMin((prev) => {
         const next = prev + factor * dtSec;
-        if (next >= SHIFT_END_MIN) {
+        if (next >= ende) {
           setSpeedState(0);
-          return SHIFT_END_MIN;
+          return ende;
         }
         return next;
       });
@@ -50,8 +64,8 @@ export function useSimulationClock(
 
   const reset = useCallback(() => {
     setSpeedState(0);
-    setNowMin(SHIFT_START_MIN);
+    setNowMin(fensterRef.current.startMin);
   }, []);
 
-  return { nowMin, speed, setSpeed, reset };
+  return { nowMin, speed, setSpeed, reset, setFenster };
 }

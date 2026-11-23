@@ -2,14 +2,15 @@ import { berechneKennzahlen, deltaProzentpunkte, type Kennzahlen } from "./oee";
 import { createRng, randRange } from "./rng";
 import { istAktiv, unionDauer } from "./intervalle";
 import {
-  BASELINE_MIN,
   DEMO_SEED,
-  SHIFT_END_MIN,
+  SCHICHTEN,
   SHIFT_START_MIN,
   STATION_IDS,
   SCHICHT_ZIEL,
   STATION_NAMEN,
   WARNUNG_OEE,
+  schichtBaselineMin,
+  type SchichtId,
   type Anlagenstatus,
   type ShiftPlan,
   type ShiftSnapshot,
@@ -99,17 +100,33 @@ const STATION_BASIS: Record<
   serialisierung: { ideal: 11.5, yield0: 0.988, speed0: 0.95 },
 };
 
-export function buildShiftPlan(seed: number = DEMO_SEED): ShiftPlan {
-  const rng = createRng(seed);
+/** Mix the demo seed with the shift kind. Frueh keeps the raw seed so existing plans stay put. */
+export function mischeSchichtArtSeed(basisSeed: number, schichtId: SchichtId): number {
+  if (schichtId === "frueh") return basisSeed >>> 0;
+  const tag = schichtId === "spaet" ? 0x51ed_5a7e : 0x7a14_c70d;
+  let t = (basisSeed ^ tag) >>> 0;
+  t = Math.imul(t ^ (t >>> 16), 0x45d9f3b) >>> 0;
+  t = Math.imul(t ^ (t >>> 16), 0x45d9f3b) >>> 0;
+  return (t ^ (t >>> 16)) >>> 0;
+}
+
+export function buildShiftPlan(
+  seed: number = DEMO_SEED,
+  schichtId: SchichtId = "frueh"
+): ShiftPlan {
+  const fenster = SCHICHTEN[schichtId];
+  const versatz = fenster.startMin - SHIFT_START_MIN;
+  const usedSeed = mischeSchichtArtSeed(seed, schichtId);
+  const rng = createRng(usedSeed);
   const stations: StationPlan[] = STATION_IDS.map((id) => {
     const basis = STATION_BASIS[id];
     const stops: StopEvent[] = BASIS_STOPPS.filter((s) => s.stationId === id).map((s) => {
       const startJitter = randRange(rng, -6, 6);
       const durJitter = randRange(rng, 0.85, 1.15);
-      let startMin = s.startMin + startJitter;
+      let startMin = s.startMin + versatz + startJitter;
       let durationMin = s.durationMin * durJitter;
-      startMin = Math.max(SHIFT_START_MIN, startMin);
-      const maxEnd = SHIFT_END_MIN;
+      startMin = Math.max(fenster.startMin, startMin);
+      const maxEnd = fenster.endMin;
       durationMin = Math.max(4, Math.min(durationMin, maxEnd - startMin));
       return { stationId: id, reason: s.reason, startMin, durationMin };
     });
@@ -125,7 +142,7 @@ export function buildShiftPlan(seed: number = DEMO_SEED): ShiftPlan {
       stops,
     };
   });
-  return { seed, startMin: SHIFT_START_MIN, endMin: SHIFT_END_MIN, stations };
+  return { seed: usedSeed, startMin: fenster.startMin, endMin: fenster.endMin, stations };
 }
 
 export function snapshotAt(
@@ -133,13 +150,17 @@ export function snapshotAt(
   nowInput: number,
   ziel: SchichtZiel = SCHICHT_ZIEL
 ): ShiftSnapshot {
-  const nowMin = clampZeit(nowInput);
+  const nowMin = clampZeit(nowInput, plan.startMin, plan.endMin);
   const lineStops = plan.stations.flatMap((s) => s.stops);
   const line = streckenKennzahlen(plan, lineStops, nowMin);
   const startKpis =
     nowMin <= plan.startMin
       ? line.kpis
-      : streckenKennzahlen(plan, lineStops, Math.min(nowMin, BASELINE_MIN)).kpis;
+      : streckenKennzahlen(
+          plan,
+          lineStops,
+          Math.min(nowMin, schichtBaselineMin(plan.startMin))
+        ).kpis;
 
   const sampleEvery = 15;
   const oeeUeberSchicht = [];

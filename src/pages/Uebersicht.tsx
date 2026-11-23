@@ -7,7 +7,13 @@ import { Stillstandsgruende } from "@/components/Stillstandsgruende";
 import { TempoSteuerung } from "@/components/TempoSteuerung";
 import type { Speed } from "@/hooks/useSimulationClock";
 import { buildShiftPlan, snapshotAt } from "@/lib/simulation";
-import { DEMO_SEED, type SchichtZiel } from "@/lib/types";
+import {
+  DEMO_SEED,
+  schichtNameLang,
+  type SchichtId,
+  type SchichtZiel,
+} from "@/lib/types";
+import { formatUhrzeit } from "@/lib/zeit";
 import { colors, type ThemeName } from "@/theme/colors";
 
 type Props = {
@@ -18,6 +24,7 @@ type Props = {
   theme: ThemeName;
   seed?: number;
   ziel?: SchichtZiel;
+  schichtId?: SchichtId;
 };
 
 export function Uebersicht({
@@ -28,8 +35,9 @@ export function Uebersicht({
   theme,
   seed = DEMO_SEED,
   ziel,
+  schichtId = "frueh",
 }: Props) {
-  const plan = useMemo(() => buildShiftPlan(seed), [seed]);
+  const plan = useMemo(() => buildShiftPlan(seed, schichtId), [seed, schichtId]);
   const snap = useMemo(() => snapshotAt(plan, nowMin, ziel), [plan, nowMin, ziel]);
   const c = colors[theme];
 
@@ -74,7 +82,9 @@ export function Uebersicht({
       <OeeChart
         data={snap.oeeUeberSchicht}
         theme={theme}
-        schichtLabel="Schichtzeit: 06:00-14:00, Frühschicht"
+        schichtLabel={`Schichtzeit: ${formatUhrzeit(plan.startMin)}-${formatUhrzeit(plan.endMin)}, ${schichtNameLang(schichtId)}`}
+        startMin={plan.startMin}
+        endMin={plan.endMin}
       />
 
       <div className="lower-grid">

@@ -192,3 +192,60 @@ describe("snapshotAt", () => {
     expect(snap.deltas.oee).toBe(Math.round(snap.kpis.oee * 100) - 50);
   });
 });
+
+describe("Spaetschicht and Nachtschicht plans", () => {
+  it("gives each shift its own window and a seeded plan", () => {
+    const frueh = buildShiftPlan(DEMO_SEED, "frueh");
+    const spaet = buildShiftPlan(DEMO_SEED, "spaet");
+    const nacht = buildShiftPlan(DEMO_SEED, "nacht");
+
+    expect(frueh).toEqual(buildShiftPlan(DEMO_SEED));
+    expect(frueh.startMin).toBe(6 * 60);
+    expect(frueh.endMin).toBe(14 * 60);
+    expect(spaet.startMin).toBe(14 * 60);
+    expect(spaet.endMin).toBe(22 * 60);
+    expect(nacht.startMin).toBe(22 * 60);
+    expect(nacht.endMin).toBe(30 * 60);
+
+    expect(spaet.seed).not.toBe(frueh.seed);
+    expect(nacht.seed).not.toBe(frueh.seed);
+    expect(nacht.seed).not.toBe(spaet.seed);
+    expect(buildShiftPlan(DEMO_SEED, "spaet")).toEqual(spaet);
+    expect(JSON.stringify(spaet.stations)).not.toBe(JSON.stringify(frueh.stations));
+  });
+
+  it("keeps stops inside the chosen window and uses the full 480 minutes at the end", () => {
+    for (const id of ["frueh", "spaet", "nacht"] as const) {
+      const plan = buildShiftPlan(DEMO_SEED, id);
+      expect(plan.endMin - plan.startMin).toBe(480);
+      for (const s of plan.stations) {
+        for (const stop of s.stops) {
+          expect(stop.startMin).toBeGreaterThanOrEqual(plan.startMin);
+          expect(stop.startMin + stop.durationMin).toBeLessThanOrEqual(
+            plan.endMin + 1e-9
+          );
+        }
+      }
+      const end = snapshotAt(plan, plan.endMin);
+      expect(end.plannedMin).toBe(480);
+      expect(end.totalUnits).toBeGreaterThan(0);
+    }
+  });
+
+  it("does not start the OEE chart at 0 for any of the three windows", () => {
+    for (const id of ["frueh", "spaet", "nacht"] as const) {
+      const plan = buildShiftPlan(DEMO_SEED, id);
+      const now = plan.endMin - 15;
+      const snap = snapshotAt(plan, now);
+      expect(snap.oeeUeberSchicht.length).toBeGreaterThan(0);
+      expect(snap.oeeUeberSchicht[0]?.minute).toBe(plan.startMin + 15);
+      expect(snap.oeeUeberSchicht[0]?.oee).toBeGreaterThan(0);
+      expect(snap.oeeUeberSchicht[0]?.label).toBe(formatUhrzeit(plan.startMin + 15));
+      expect(snap.kpis.oee).toBeGreaterThan(0);
+    }
+    expect(formatUhrzeit(14 * 60 + 15)).toBe("14:15");
+    expect(formatUhrzeit(22 * 60 + 15)).toBe("22:15");
+    expect(formatUhrzeit(30 * 60)).toBe("06:00");
+    expect(formatUhrzeit(30 * 60 - 15, true)).toBe("05:45:00");
+  });
+});

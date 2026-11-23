@@ -26,9 +26,10 @@ Desktop (1280px), one shot per gloss theme. Motion is off (the default).
 
 ## What it shows
 
-- **Übersicht:** four KPI rings (Verfügbarkeit, Leistung, Qualität, OEE) with a delta vs. the shift target (Schichtziel), OEE over the Frühschicht (06:00-14:00), stop reasons, and live plant status for Blistermaschine, Kartonierer, and Serialisierung
+- **Übersicht:** four KPI rings (Verfügbarkeit, Leistung, Qualität, OEE) with a delta vs. the shift target (Schichtziel), OEE over the selected shift (Früh 06:00-14:00, Spät 14:00-22:00, or Nacht 22:00-06:00), stop reasons, and live plant status for Blistermaschine, Kartonierer, and Serialisierung
 - **Linienübersicht:** three fictional lines side by side, with OEE, the three KPI parts, and a short status, following the simulation clock
 - **Historie:** a table and chart of the last seven working days of Frühschicht results, with a way to open one shift's KPIs. The simulation clock does not rewrite those figures
+- A shift picker for Früh, Spät and Nacht, each with its own window and a seeded plan. The clock, KPIs and OEE line follow that window
 - A ticking simulation clock with Pause, 1x, 10x, 60x, and reset (1x = one simulated minute per real second)
 - **Einstellungen:** edit the demo seed, the default clock speed, and the four Schichtziel values, with validation and a reset-to-demo action. Values persist in the browser (Zod-checked) and the Übersicht deltas use the new targets
 - Three gloss themes (Khaki, Graphite, Mitternacht) and an optional slow background motion, off when reduced motion is preferred

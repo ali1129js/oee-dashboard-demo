@@ -24,14 +24,43 @@ export const STATUS_LABEL: Record<Anlagenstatus, string> = {
   steht: "Steht",
 };
 
-/** Minutes from midnight. Fruehschicht 06:00-14:00. */
-export const SHIFT_START_MIN = 6 * 60;
-export const SHIFT_END_MIN = 14 * 60;
+/** Minutes from midnight. Fruehschicht 06:00-14:00. Kept as aliases for that window. */
+export const SCHICHT_IDS = ["frueh", "spaet", "nacht"] as const;
+export type SchichtId = (typeof SCHICHT_IDS)[number];
+
+export type Schichtfenster = {
+  id: SchichtId;
+  name: string;
+  /** Minutes from midnight; Nachtschicht end may be >= 24 * 60. */
+  startMin: number;
+  endMin: number;
+};
+
+export const SCHICHTEN: Record<SchichtId, Schichtfenster> = {
+  frueh: { id: "frueh", name: "Früh", startMin: 6 * 60, endMin: 14 * 60 },
+  spaet: { id: "spaet", name: "Spät", startMin: 14 * 60, endMin: 22 * 60 },
+  nacht: { id: "nacht", name: "Nacht", startMin: 22 * 60, endMin: 30 * 60 },
+};
+
+export const SHIFT_START_MIN = SCHICHTEN.frueh.startMin;
+export const SHIFT_END_MIN = SCHICHTEN.frueh.endMin;
 export const SHIFT_DAUER_MIN = SHIFT_END_MIN - SHIFT_START_MIN;
-/** First sample used for "vs. Schichtstart" deltas. */
+/** First sample used for "vs. Schichtstart" deltas on the Fruehschicht. */
 export const BASELINE_MIN = SHIFT_START_MIN + 30;
-/** Default paused view: mid-to-late shift, so the dashboard looks complete. */
+/** Default paused view for the Fruehschicht: mid-to-late, so the dashboard looks complete. */
 export const DEMO_NOW_MIN = 13 * 60 + 45;
+
+export function schichtBaselineMin(startMin: number): number {
+  return startMin + 30;
+}
+
+export function schichtDemoNowMin(endMin: number): number {
+  return endMin - 15;
+}
+
+export function schichtNameLang(id: SchichtId): string {
+  return `${SCHICHTEN[id].name}schicht`;
+}
 export const DEMO_SEED = 2026_11_19;
 export const DEMO_DATUM = "19.11.2026";
 export const LINIE_NAME = "Linie 3 Demo";

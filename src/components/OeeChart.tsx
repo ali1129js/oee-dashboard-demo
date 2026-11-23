@@ -15,12 +15,19 @@ type Props = {
   data: OeePunkt[];
   theme: ThemeName;
   schichtLabel: string;
+  startMin?: number;
+  endMin?: number;
 };
 
-const HOUR_TICKS = Array.from({ length: 9 }, (_, i) => SHIFT_START_MIN + i * 60);
-
-export function OeeChart({ data, theme, schichtLabel }: Props) {
+export function OeeChart({
+  data,
+  theme,
+  schichtLabel,
+  startMin = SHIFT_START_MIN,
+  endMin = SHIFT_END_MIN,
+}: Props) {
   const c = colors[theme];
+  const hourTicks = Array.from({ length: 9 }, (_, i) => startMin + i * 60);
   return (
     <section className="card chart-card" aria-label="OEE über die Schicht">
       <header className="card__head">
@@ -34,8 +41,8 @@ export function OeeChart({ data, theme, schichtLabel }: Props) {
             <XAxis
               type="number"
               dataKey="minute"
-              domain={[SHIFT_START_MIN, SHIFT_END_MIN]}
-              ticks={HOUR_TICKS}
+              domain={[startMin, endMin]}
+              ticks={hourTicks}
               tickFormatter={(v: number) => formatUhrzeit(v)}
               tick={{ fill: c.muted, fontSize: 12 }}
               tickLine={false}

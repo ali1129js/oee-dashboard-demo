@@ -3,7 +3,9 @@ import {
   DEMO_NOW_MIN,
   DEMO_SEED,
   SCHICHT_ZIEL,
+  SHIFT_START_MIN,
   type Anlagenstatus,
+  type SchichtId,
   type SchichtZiel,
   type ShiftPlan,
   type ShiftSnapshot,
@@ -98,25 +100,33 @@ export type Linienvergleich = {
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
-export function baueLinienPlan(def: LinienDefinition): LinienPlan {
-  const basis = buildShiftPlan(def.seed);
+export function baueLinienPlan(
+  def: LinienDefinition,
+  schichtId: SchichtId = "frueh"
+): LinienPlan {
+  const basis = buildShiftPlan(def.seed, schichtId);
+  const versatz = basis.startMin - SHIFT_START_MIN;
   const stations = basis.stations.map((s) => ({
     ...s,
     speedFactor: clamp(s.speedFactor * def.tempoFaktor, 0.5, 1),
     qualityYield: clamp(s.qualityYield * def.ausbeuteFaktor, 0.9, 1),
-    stops: [...s.stops, ...def.zusatzStopps.filter((z) => z.stationId === s.id)].sort(
-      (a, b) => a.startMin - b.startMin
-    ),
+    stops: [
+      ...s.stops,
+      ...def.zusatzStopps
+        .filter((z) => z.stationId === s.id)
+        .map((z) => ({ ...z, startMin: z.startMin + versatz })),
+    ].sort((a, b) => a.startMin - b.startMin),
   }));
   return { definition: def, plan: { ...basis, stations } };
 }
 
 export function baueAlleLinienPlaene(
   definitionen: readonly LinienDefinition[] = LINIEN,
-  linie3Seed: number = DEMO_SEED
+  linie3Seed: number = DEMO_SEED,
+  schichtId: SchichtId = "frueh"
 ): LinienPlan[] {
   return definitionen.map((def) =>
-    baueLinienPlan(def.id === "linie-3" ? { ...def, seed: linie3Seed } : def)
+    baueLinienPlan(def.id === "linie-3" ? { ...def, seed: linie3Seed } : def, schichtId)
   );
 }
 

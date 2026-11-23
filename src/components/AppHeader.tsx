@@ -1,5 +1,12 @@
 import { MotionToggle } from "@/components/MotionToggle";
-import { DEMO_DATUM, LINIE_NAME, LINIE_UNTERTITEL } from "@/lib/types";
+import {
+  DEMO_DATUM,
+  LINIE_NAME,
+  LINIE_UNTERTITEL,
+  SCHICHT_IDS,
+  SCHICHTEN,
+  type SchichtId,
+} from "@/lib/types";
 import { PAGE_IDS, PAGE_LABELS, type PageId } from "@/lib/navigation";
 import {
   THEME_LABELS,
@@ -10,6 +17,8 @@ import {
 
 type Props = {
   page: PageId;
+  schichtId: SchichtId;
+  onSchicht: (id: SchichtId) => void;
   theme: ThemeName;
   onTheme: (theme: ThemeName) => void;
   motion: MotionName;
@@ -19,6 +28,8 @@ type Props = {
 
 export function AppHeader({
   page,
+  schichtId,
+  onSchicht,
   theme,
   onTheme,
   motion,
@@ -66,9 +77,20 @@ export function AppHeader({
         </nav>
 
         <div className="topbar__meta">
-          <p className="meta-chip" aria-label="Schicht Früh">
-            Schicht: Früh
-          </p>
+          <div className="segmented wrap" role="radiogroup" aria-label="Schicht">
+            {SCHICHT_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className="segment"
+                role="radio"
+                aria-checked={schichtId === id}
+                onClick={() => onSchicht(id)}
+              >
+                {SCHICHTEN[id].name}
+              </button>
+            ))}
+          </div>
           <p className="meta-chip">
             <time dateTime="2026-11-19">{DEMO_DATUM}</time>
           </p>

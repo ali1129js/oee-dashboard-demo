@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { useEinstellungen } from "@/hooks/useEinstellungen";
 import { useHashPage } from "@/hooks/useHashPage";
@@ -5,7 +6,7 @@ import { useMotion } from "@/hooks/useMotion";
 import { useSimulationClock } from "@/hooks/useSimulationClock";
 import { useTheme } from "@/hooks/useTheme";
 import type { Einstellungen as EinstellungenWert } from "@/lib/einstellungen";
-import { DEMO_NOW_MIN } from "@/lib/types";
+import { SCHICHTEN, schichtDemoNowMin, type SchichtId } from "@/lib/types";
 import { Einstellungen } from "@/pages/Einstellungen";
 import { Historie } from "@/pages/Historie";
 import { Linienuebersicht } from "@/pages/Linienuebersicht";
@@ -15,7 +16,14 @@ export function App() {
   const { theme, setTheme } = useTheme();
   const { motion, setMotion, reducedMotion } = useMotion();
   const { einstellungen, setEinstellungen, resetToDemo } = useEinstellungen();
-  const clock = useSimulationClock(DEMO_NOW_MIN, einstellungen.defaultSpeed);
+  const [schichtId, setSchichtId] = useState<SchichtId>("frueh");
+  const fenster = SCHICHTEN[schichtId];
+  const clock = useSimulationClock(
+    schichtDemoNowMin(fenster.endMin),
+    einstellungen.defaultSpeed,
+    fenster.startMin,
+    fenster.endMin
+  );
   const { page } = useHashPage();
 
   function handleSave(next: EinstellungenWert) {
@@ -29,6 +37,12 @@ export function App() {
     clock.setSpeed(0);
   }
 
+  function handleSchicht(id: SchichtId) {
+    const next = SCHICHTEN[id];
+    setSchichtId(id);
+    clock.setFenster(next.startMin, next.endMin, schichtDemoNowMin(next.endMin));
+  }
+
   return (
     <div className="app">
       <a className="skip-link" href="#inhalt">
@@ -36,6 +50,8 @@ export function App() {
       </a>
       <AppHeader
         page={page}
+        schichtId={schichtId}
+        onSchicht={handleSchicht}
         theme={theme}
         onTheme={setTheme}
         motion={motion}
@@ -50,6 +66,7 @@ export function App() {
           onReset={clock.reset}
           seed={einstellungen.seed}
           ziel={einstellungen.schichtZiel}
+          schichtId={schichtId}
         />
       ) : page === "historie" ? (
         <Historie
@@ -73,6 +90,7 @@ export function App() {
           theme={theme}
           seed={einstellungen.seed}
           ziel={einstellungen.schichtZiel}
+          schichtId={schichtId}
         />
       )}
     </div>

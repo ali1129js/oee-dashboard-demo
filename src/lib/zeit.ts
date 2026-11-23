@@ -1,8 +1,12 @@
 import { SHIFT_END_MIN, SHIFT_START_MIN } from "./types";
 
-export function clampZeit(minFromMidnight: number): number {
-  if (!Number.isFinite(minFromMidnight)) return SHIFT_START_MIN;
-  return Math.min(SHIFT_END_MIN, Math.max(SHIFT_START_MIN, minFromMidnight));
+export function clampZeit(
+  minFromMidnight: number,
+  startMin: number = SHIFT_START_MIN,
+  endMin: number = SHIFT_END_MIN
+): number {
+  if (!Number.isFinite(minFromMidnight)) return startMin;
+  return Math.min(endMin, Math.max(startMin, minFromMidnight));
 }
 
 export function formatUhrzeit(minFromMidnight: number, withSeconds = false): string {

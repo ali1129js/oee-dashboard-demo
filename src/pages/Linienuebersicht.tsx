@@ -10,7 +10,7 @@ import {
   type LinienSnapshot,
 } from "@/lib/linien";
 import { alsProzent } from "@/lib/oee";
-import { DEMO_SEED, STATUS_LABEL, type SchichtZiel } from "@/lib/types";
+import { DEMO_SEED, STATUS_LABEL, type SchichtId, type SchichtZiel } from "@/lib/types";
 
 type Props = {
   nowMin: number;
@@ -19,6 +19,7 @@ type Props = {
   onReset: () => void;
   seed?: number;
   ziel?: SchichtZiel;
+  schichtId?: SchichtId;
 };
 
 export function Linienuebersicht({
@@ -28,8 +29,12 @@ export function Linienuebersicht({
   onReset,
   seed = DEMO_SEED,
   ziel,
+  schichtId = "frueh",
 }: Props) {
-  const plaene = useMemo(() => baueAlleLinienPlaene(LINIEN, seed), [seed]);
+  const plaene = useMemo(
+    () => baueAlleLinienPlaene(LINIEN, seed, schichtId),
+    [seed, schichtId]
+  );
   const vergleich = useMemo(
     () => vergleicheLinien(plaene, nowMin, ziel),
     [plaene, nowMin, ziel]
