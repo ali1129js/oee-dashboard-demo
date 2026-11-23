@@ -78,6 +78,21 @@ function lineHits(line) {
   }
   return out;
 }
+/** README screenshots may live in docs/. Other images, and any logo/cross name, stay banned. */
+function isAllowedDocsScreenshot(rel, name) {
+  const parts = path.normalize(rel).split(path.sep);
+  return (
+    parts.length === 2 &&
+    parts[0] === "docs" &&
+    /\.(png|webp|jpe?g)$/i.test(name) &&
+    !/logo/i.test(name) &&
+    !/cross/i.test(name)
+  );
+}
+function isBannedName(rel, name) {
+  return BANNED_FILE.some((r) => r.test(name)) && !isAllowedDocsScreenshot(rel, name);
+}
+
 const hits = [];
 function walk(d) {
   for (const e of fs.readdirSync(d, { withFileTypes: true })) {
@@ -88,7 +103,7 @@ function walk(d) {
       if (!SKIP_DIRS.has(e.name)) walk(full);
       continue;
     }
-    if (BANNED_FILE.some((r) => r.test(e.name)) || lineHits(e.name).length)
+    if (isBannedName(rel, e.name) || lineHits(e.name).length)
       hits.push(`${rel}: banned file type/name`);
     if (BINARY.test(e.name)) continue;
     fs.readFileSync(full, "utf8")

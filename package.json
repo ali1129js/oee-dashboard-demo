@@ -15,7 +15,8 @@
     "pretest": "npm run guard",
     "test": "vitest run",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "shots": "node scripts/screenshots.mjs docs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -37,6 +38,7 @@
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
     "jsdom": "^26.1.0",
+    "playwright-core": "^1.56.1",
     "prettier": "^3.9.10",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
