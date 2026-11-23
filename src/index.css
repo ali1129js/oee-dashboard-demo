@@ -599,13 +599,78 @@ input {
   gap: 16px;
 }
 
+/* Einstellungen */
+.einstellungen-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.einstellungen-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.einstellungen-field label,
+.einstellungen-field legend {
+  font-weight: 650;
+  font-size: 0.92rem;
+}
+.einstellungen-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.einstellungen-field input[type="text"] {
+  max-width: 16rem;
+  padding: 8px 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.einstellungen-error {
+  margin: 0;
+  color: var(--delta-down);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+.einstellungen-ziele {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.einstellungen-ziel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.einstellungen-ziel-grid input[type="text"] {
+  max-width: 8rem;
+}
+.einstellungen-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.einstellungen-saved {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 /* Phone: keep the layout usable, no overflow traps. */
 @media (max-width: 960px) {
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .plant-summary,
-  .line-grid {
+  .line-grid,
+  .einstellungen-ziel-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .lower-grid {
@@ -623,7 +688,8 @@ input {
     grid-template-columns: 1fr;
   }
   .plant-summary,
-  .line-grid {
+  .line-grid,
+  .einstellungen-ziel-grid {
     grid-template-columns: 1fr;
   }
   .kpi-kachel__ring {

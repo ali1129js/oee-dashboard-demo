@@ -1,10 +1,12 @@
 import { afterEach } from "vitest";
+import { EINSTELLUNGEN_KEY } from "@/lib/einstellungen";
 
 afterEach(async () => {
   if (typeof window === "undefined") return;
   const { cleanup } = await import("@testing-library/react");
   cleanup();
   window.location.hash = "";
+  window.localStorage.removeItem(EINSTELLUNGEN_KEY);
 });
 
 if (typeof window !== "undefined") {

@@ -9,14 +9,17 @@ export type Speed = 0 | 1 | 10 | 60;
  * so a full 8-hour shift takes eight minutes of wall time at 1x.
  * The interval is cleared on pause, unmount, or when the shift ends.
  */
-export function useSimulationClock(initialMin: number): {
+export function useSimulationClock(
+  initialMin: number,
+  initialSpeed: Speed = 0
+): {
   nowMin: number;
   speed: Speed;
   setSpeed: (s: Speed) => void;
   reset: () => void;
 } {
   const [nowMin, setNowMin] = useState(() => clampZeit(initialMin));
-  const [speed, setSpeedState] = useState<Speed>(0);
+  const [speed, setSpeedState] = useState<Speed>(initialSpeed);
   const speedRef = useRef<Speed>(0);
   speedRef.current = speed;
 

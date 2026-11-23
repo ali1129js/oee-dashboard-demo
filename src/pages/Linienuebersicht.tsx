@@ -3,24 +3,37 @@ import { SimBanner } from "@/components/SimBanner";
 import { TempoSteuerung } from "@/components/TempoSteuerung";
 import type { Speed } from "@/hooks/useSimulationClock";
 import {
+  LINIEN,
   baueAlleLinienPlaene,
   linienKurzstatus,
   vergleicheLinien,
   type LinienSnapshot,
 } from "@/lib/linien";
 import { alsProzent } from "@/lib/oee";
-import { STATUS_LABEL } from "@/lib/types";
+import { DEMO_SEED, STATUS_LABEL, type SchichtZiel } from "@/lib/types";
 
 type Props = {
   nowMin: number;
   speed: Speed;
   onSpeed: (s: Speed) => void;
   onReset: () => void;
+  seed?: number;
+  ziel?: SchichtZiel;
 };
 
-export function Linienuebersicht({ nowMin, speed, onSpeed, onReset }: Props) {
-  const plaene = useMemo(() => baueAlleLinienPlaene(), []);
-  const vergleich = useMemo(() => vergleicheLinien(plaene, nowMin), [plaene, nowMin]);
+export function Linienuebersicht({
+  nowMin,
+  speed,
+  onSpeed,
+  onReset,
+  seed = DEMO_SEED,
+  ziel,
+}: Props) {
+  const plaene = useMemo(() => baueAlleLinienPlaene(LINIEN, seed), [seed]);
+  const vergleich = useMemo(
+    () => vergleicheLinien(plaene, nowMin, ziel),
+    [plaene, nowMin, ziel]
+  );
 
   return (
     <main id="inhalt" className="page">

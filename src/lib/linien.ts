@@ -1,8 +1,10 @@
 import { buildShiftPlan, snapshotAt } from "./simulation";
 import {
   DEMO_NOW_MIN,
+  DEMO_SEED,
   SCHICHT_ZIEL,
   type Anlagenstatus,
+  type SchichtZiel,
   type ShiftPlan,
   type ShiftSnapshot,
   type StopEvent,
@@ -110,13 +112,20 @@ export function baueLinienPlan(def: LinienDefinition): LinienPlan {
 }
 
 export function baueAlleLinienPlaene(
-  definitionen: readonly LinienDefinition[] = LINIEN
+  definitionen: readonly LinienDefinition[] = LINIEN,
+  linie3Seed: number = DEMO_SEED
 ): LinienPlan[] {
-  return definitionen.map(baueLinienPlan);
+  return definitionen.map((def) =>
+    baueLinienPlan(def.id === "linie-3" ? { ...def, seed: linie3Seed } : def)
+  );
 }
 
-export function linienSnapshot(lp: LinienPlan, nowMin: number): LinienSnapshot {
-  const snapshot = snapshotAt(lp.plan, nowMin);
+export function linienSnapshot(
+  lp: LinienPlan,
+  nowMin: number,
+  ziel: SchichtZiel = SCHICHT_ZIEL
+): LinienSnapshot {
+  const snapshot = snapshotAt(lp.plan, nowMin, ziel);
   const stillstandMin = snapshot.stillstaende.reduce((sum, s) => sum + s.durationMin, 0);
   return {
     id: lp.definition.id,
@@ -133,9 +142,10 @@ export function linienSnapshot(lp: LinienPlan, nowMin: number): LinienSnapshot {
 /** Compare all lines at one time. Ties on OEE keep the earlier line. */
 export function vergleicheLinien(
   plaene: readonly LinienPlan[],
-  nowMin: number = DEMO_NOW_MIN
+  nowMin: number = DEMO_NOW_MIN,
+  ziel: SchichtZiel = SCHICHT_ZIEL
 ): Linienvergleich {
-  const linien = plaene.map((p) => linienSnapshot(p, nowMin));
+  const linien = plaene.map((p) => linienSnapshot(p, nowMin, ziel));
   if (linien.length === 0) {
     return {
       linien,

@@ -18,6 +18,7 @@ import {
   type StationSnapshot,
   type StillstandSumme,
   type StopEvent,
+  type SchichtZiel,
   type StopReason,
 } from "./types";
 import { clampZeit, formatUhrzeit } from "./zeit";
@@ -127,7 +128,11 @@ export function buildShiftPlan(seed: number = DEMO_SEED): ShiftPlan {
   return { seed, startMin: SHIFT_START_MIN, endMin: SHIFT_END_MIN, stations };
 }
 
-export function snapshotAt(plan: ShiftPlan, nowInput: number): ShiftSnapshot {
+export function snapshotAt(
+  plan: ShiftPlan,
+  nowInput: number,
+  ziel: SchichtZiel = SCHICHT_ZIEL
+): ShiftSnapshot {
   const nowMin = clampZeit(nowInput);
   const lineStops = plan.stations.flatMap((s) => s.stops);
   const line = streckenKennzahlen(plan, lineStops, nowMin);
@@ -173,11 +178,11 @@ export function snapshotAt(plan: ShiftPlan, nowInput: number): ShiftSnapshot {
         : {
             verfuegbarkeit: deltaProzentpunkte(
               line.kpis.verfuegbarkeit,
-              SCHICHT_ZIEL.verfuegbarkeit
+              ziel.verfuegbarkeit
             ),
-            leistung: deltaProzentpunkte(line.kpis.leistung, SCHICHT_ZIEL.leistung),
-            qualitaet: deltaProzentpunkte(line.kpis.qualitaet, SCHICHT_ZIEL.qualitaet),
-            oee: deltaProzentpunkte(line.kpis.oee, SCHICHT_ZIEL.oee),
+            leistung: deltaProzentpunkte(line.kpis.leistung, ziel.leistung),
+            qualitaet: deltaProzentpunkte(line.kpis.qualitaet, ziel.qualitaet),
+            oee: deltaProzentpunkte(line.kpis.oee, ziel.oee),
           },
     oeeUeberSchicht,
     stillstaende,

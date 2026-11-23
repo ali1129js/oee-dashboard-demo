@@ -7,7 +7,7 @@ import { Stillstandsgruende } from "@/components/Stillstandsgruende";
 import { TempoSteuerung } from "@/components/TempoSteuerung";
 import type { Speed } from "@/hooks/useSimulationClock";
 import { buildShiftPlan, snapshotAt } from "@/lib/simulation";
-import { DEMO_SEED } from "@/lib/types";
+import { DEMO_SEED, type SchichtZiel } from "@/lib/types";
 import { colors, type ThemeName } from "@/theme/colors";
 
 type Props = {
@@ -16,11 +16,21 @@ type Props = {
   onSpeed: (s: Speed) => void;
   onReset: () => void;
   theme: ThemeName;
+  seed?: number;
+  ziel?: SchichtZiel;
 };
 
-export function Uebersicht({ nowMin, speed, onSpeed, onReset, theme }: Props) {
-  const plan = useMemo(() => buildShiftPlan(DEMO_SEED), []);
-  const snap = useMemo(() => snapshotAt(plan, nowMin), [plan, nowMin]);
+export function Uebersicht({
+  nowMin,
+  speed,
+  onSpeed,
+  onReset,
+  theme,
+  seed = DEMO_SEED,
+  ziel,
+}: Props) {
+  const plan = useMemo(() => buildShiftPlan(seed), [seed]);
+  const snap = useMemo(() => snapshotAt(plan, nowMin, ziel), [plan, nowMin, ziel]);
   const c = colors[theme];
 
   return (

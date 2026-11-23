@@ -4,6 +4,7 @@ import { OeeChart } from "@/components/OeeChart";
 import { SimBanner } from "@/components/SimBanner";
 import { Stillstandsgruende } from "@/components/Stillstandsgruende";
 import { baueHistorie, type HistorienSchicht } from "@/lib/historie";
+import type { SchichtZiel } from "@/lib/types";
 import { alsProzent } from "@/lib/oee";
 import { colors, type ThemeName } from "@/theme/colors";
 import {
@@ -22,10 +23,15 @@ type Props = {
   nowMin?: number;
   /** Override the seeded series (empty and single-day cases in tests). */
   serie?: HistorienSchicht[];
+  seed?: number;
+  ziel?: SchichtZiel;
 };
 
-export function Historie({ theme, serie }: Props) {
-  const historie = useMemo(() => serie ?? baueHistorie(), [serie]);
+export function Historie({ theme, serie, seed, ziel }: Props) {
+  const historie = useMemo(
+    () => serie ?? baueHistorie({ seed, ziel }),
+    [serie, seed, ziel]
+  );
   const newestIso = historie.at(-1)?.isoDatum ?? null;
   const [auswahlIso, setAuswahlIso] = useState<string | null>(newestIso);
   const ausgewaehlt =

@@ -1,5 +1,12 @@
 import { snapshotAt, buildShiftPlan } from "./simulation";
-import { DEMO_DATUM, DEMO_SEED, type ShiftPlan, type ShiftSnapshot } from "./types";
+import {
+  DEMO_DATUM,
+  DEMO_SEED,
+  SCHICHT_ZIEL,
+  type SchichtZiel,
+  type ShiftPlan,
+  type ShiftSnapshot,
+} from "./types";
 import type { Kennzahlen } from "./oee";
 
 /** Calendar day in the Europe/Berlin civil date, no clock time. */
@@ -22,6 +29,8 @@ export type HistorieOptionen = {
   seed?: number;
   /** Exclusive reference day (typically "today"). Default DEMO_DATUM. */
   bezugsdatum?: string;
+  /** Targets used for the stored deltas. Default SCHICHT_ZIEL. */
+  ziel?: SchichtZiel;
 };
 
 export function parseDeDatum(s: string): Kalendertag {
@@ -89,11 +98,12 @@ export function mischeSchichtSeed(basisSeed: number, tag: Kalendertag): number {
 
 export function baueHistorienSchicht(
   tag: Kalendertag,
-  basisSeed: number = DEMO_SEED
+  basisSeed: number = DEMO_SEED,
+  ziel: SchichtZiel = SCHICHT_ZIEL
 ): HistorienSchicht {
   const seed = mischeSchichtSeed(basisSeed, tag);
   const plan = buildShiftPlan(seed);
-  const snapshot = snapshotAt(plan, plan.endMin);
+  const snapshot = snapshotAt(plan, plan.endMin, ziel);
   return {
     datum: formatDeDatum(tag),
     isoDatum: formatIsoDatum(tag),
@@ -112,7 +122,8 @@ export function baueHistorie(optionen: HistorieOptionen = {}): HistorienSchicht[
   const anzahl = optionen.anzahl ?? 7;
   const seed = optionen.seed ?? DEMO_SEED;
   const bezugsdatum = optionen.bezugsdatum ?? DEMO_DATUM;
+  const ziel = optionen.ziel ?? SCHICHT_ZIEL;
   return arbeitstageVorher(parseDeDatum(bezugsdatum), anzahl).map((tag) =>
-    baueHistorienSchicht(tag, seed)
+    baueHistorienSchicht(tag, seed, ziel)
   );
 }

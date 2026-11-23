@@ -178,4 +178,17 @@ describe("snapshotAt", () => {
     expect(formatUhrzeit(DEMO_NOW_MIN)).toBe("13:45");
     expect(formatUhrzeit(DEMO_NOW_MIN, true)).toBe("13:45:00");
   });
+
+  it("uses the given Schichtziel for deltas", () => {
+    const snap = snapshotAt(plan, DEMO_NOW_MIN, {
+      verfuegbarkeit: 0.5,
+      leistung: 0.5,
+      qualitaet: 0.5,
+      oee: 0.5,
+    });
+    const defaultSnap = snapshotAt(plan, DEMO_NOW_MIN);
+    expect(snap.kpis).toEqual(defaultSnap.kpis);
+    expect(snap.deltas.oee).not.toBe(defaultSnap.deltas.oee);
+    expect(snap.deltas.oee).toBe(Math.round(snap.kpis.oee * 100) - 50);
+  });
 });

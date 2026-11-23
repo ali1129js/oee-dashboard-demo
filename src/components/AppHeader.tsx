@@ -17,8 +17,6 @@ type Props = {
   reducedMotion: boolean;
 };
 
-const LATER_TABS = ["Einstellungen"] as const;
-
 export function AppHeader({
   page,
   theme,
@@ -64,17 +62,6 @@ export function AppHeader({
             >
               {PAGE_LABELS[id]}
             </a>
-          ))}
-          {LATER_TABS.map((name) => (
-            <span
-              key={name}
-              className="nav__item is-disabled"
-              title="bald verfügbar"
-              aria-disabled="true"
-            >
-              {name}
-              <span className="nav__soon">bald verfügbar</span>
-            </span>
           ))}
         </nav>
 
