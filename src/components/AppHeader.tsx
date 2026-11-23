@@ -17,7 +17,7 @@ type Props = {
   reducedMotion: boolean;
 };
 
-const LATER_TABS = ["Historie", "Einstellungen"] as const;
+const LATER_TABS = ["Einstellungen"] as const;
 
 export function AppHeader({
   page,

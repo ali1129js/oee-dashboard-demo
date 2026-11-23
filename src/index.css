@@ -549,6 +549,56 @@ input {
   font-variant-numeric: tabular-nums;
 }
 
+/* Historie */
+.historie-empty {
+  margin: 0;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 600;
+}
+.historie-table-wrap {
+  overflow-x: auto;
+}
+.historie-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.historie-table th,
+.historie-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+.historie-table thead th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.historie-table tbody th {
+  font-weight: 650;
+  font-variant-numeric: normal;
+}
+.historie-table tr:last-child th,
+.historie-table tr:last-child td {
+  border-bottom: 0;
+}
+.historie-table tr.is-selected {
+  background: var(--banner-bg, var(--surface));
+}
+.historie-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* Phone: keep the layout usable, no overflow traps. */
 @media (max-width: 960px) {
   .kpi-grid {

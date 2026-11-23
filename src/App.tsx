@@ -4,6 +4,7 @@ import { useMotion } from "@/hooks/useMotion";
 import { useSimulationClock } from "@/hooks/useSimulationClock";
 import { useTheme } from "@/hooks/useTheme";
 import { DEMO_NOW_MIN } from "@/lib/types";
+import { Historie } from "@/pages/Historie";
 import { Linienuebersicht } from "@/pages/Linienuebersicht";
 import { Uebersicht } from "@/pages/Uebersicht";
 
@@ -33,6 +34,8 @@ export function App() {
           onSpeed={clock.setSpeed}
           onReset={clock.reset}
         />
+      ) : page === "historie" ? (
+        <Historie theme={theme} nowMin={clock.nowMin} />
       ) : (
         <Uebersicht
           nowMin={clock.nowMin}
