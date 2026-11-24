@@ -6,8 +6,10 @@ import { SimBanner } from "@/components/SimBanner";
 import { Stillstandsgruende } from "@/components/Stillstandsgruende";
 import { TempoSteuerung } from "@/components/TempoSteuerung";
 import type { Speed } from "@/hooks/useSimulationClock";
+import { buildShiftCsv, downloadCsv, shiftCsvFilename } from "@/lib/csvExport";
 import { buildShiftPlan, snapshotAt } from "@/lib/simulation";
 import {
+  DEMO_DATUM,
   DEMO_SEED,
   schichtNameLang,
   type SchichtId,
@@ -50,6 +52,20 @@ export function Uebersicht({
         onSpeed={onSpeed}
         onReset={onReset}
       />
+      <div className="export-actions">
+        <button
+          type="button"
+          className="btn"
+          onClick={() =>
+            downloadCsv(
+              shiftCsvFilename(schichtId, DEMO_DATUM),
+              buildShiftCsv({ plan, snap, schichtId, datum: DEMO_DATUM })
+            )
+          }
+        >
+          CSV exportieren
+        </button>
+      </div>
 
       <section className="kpi-grid" aria-label="Kennzahlen der Schicht">
         <KpiKachel

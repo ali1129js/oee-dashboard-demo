@@ -231,6 +231,13 @@ input {
   align-items: center;
   gap: 10px 14px;
 }
+
+.export-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+
 .tempo__time {
   font-size: 0.92rem;
   color: var(--muted);

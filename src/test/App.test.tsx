@@ -158,3 +158,10 @@ describe("Historie navigation", () => {
     expect(screen.getByRole("heading", { name: "Historie" })).toBeInTheDocument();
   });
 });
+
+describe("CSV export", () => {
+  it("offers a CSV export of the current shift on Übersicht", () => {
+    render(<App />);
+    expect(screen.getByRole("button", { name: "CSV exportieren" })).toBeInTheDocument();
+  });
+});

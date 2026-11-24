@@ -30,6 +30,7 @@ Desktop (1280px), one shot per gloss theme. Motion is off (the default).
 - **Linienübersicht:** three fictional lines side by side, with OEE, the three KPI parts, and a short status, following the simulation clock
 - **Historie:** a table and chart of the last seven working days of Frühschicht results, with a way to open one shift's KPIs. The simulation clock does not rewrite those figures
 - A shift picker for Früh, Spät and Nacht, each with its own window and a seeded plan. The clock, KPIs and OEE line follow that window
+- A CSV export of the current shift on Übersicht: interval OEE, stops so far, and station status. The file name includes the demo date and the shift.
 - A ticking simulation clock with Pause, 1x, 10x, 60x, and reset (1x = one simulated minute per real second)
 - **Einstellungen:** edit the demo seed, the default clock speed, and the four Schichtziel values, with validation and a reset-to-demo action. Values persist in the browser (Zod-checked) and the Übersicht deltas use the new targets
 - Three gloss themes (Khaki, Graphite, Mitternacht) and an optional slow background motion, off when reduced motion is preferred
